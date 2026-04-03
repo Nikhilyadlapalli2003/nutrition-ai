@@ -4,7 +4,7 @@
     "builder": "NIXPACKS"
   },
   "deploy": {
-    "startCommand": "gunicorn nutrition_ai.wsgi --log-file -",
+    "startCommand": "gunicorn nutrition_ai.wsgi --log-file - -b 0.0.0.0:$PORT",
     "restartPolicyType": "ON_FAILURE",
     "restartPolicyMaxRetries": 10
   }
