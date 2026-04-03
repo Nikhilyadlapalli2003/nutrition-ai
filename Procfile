@@ -1,1 +1,1 @@
-web: gunicorn nutrition_ai.wsgi --log-file - -b 0.0.0.0:$PORT
+web: python manage.py migrate && gunicorn nutrition_ai.wsgi --log-file - -b 0.0.0.0:$PORT
