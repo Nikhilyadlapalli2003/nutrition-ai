@@ -1,0 +1,217 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>AI Nutrition System</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{% static 'css/avatar.css' %}?v=3">
+
+<style>
+
+/* ===== ROOT COLORS ===== */
+:root{
+    --bg:#f4f7fb;
+    --card:#ffffff;
+    --text:#111827;
+    --nav:#0f172a;
+    --accent:#22c55e;
+}
+
+/* ===== DARK MODE COLORS ===== */
+body.dark{
+    --bg:#0f172a;
+    --card:#1e293b;
+    --text:#e5e7eb;
+    --nav:#020617;
+}
+
+/* ===== GLOBAL ===== */
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:'Inter',sans-serif;
+}
+
+body{
+    background:var(--bg);
+    color:var(--text);
+    transition:0.3s ease;
+}
+
+/* ===== NAVBAR ===== */
+.navbar{
+    background:var(--nav);
+    padding:15px 40px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    color:white;
+}
+
+.logo{
+    font-weight:600;
+    font-size:20px;
+}
+
+.nav-links a{
+    color:white;
+    text-decoration:none;
+    margin-left:18px;
+    font-size:14px;
+}
+
+/* ===== DARK TOGGLE ===== */
+.toggle-btn{
+    margin-left:20px;
+    cursor:pointer;
+    background:rgba(255,255,255,0.15);
+    border:none;
+    padding:6px 12px;
+    border-radius:8px;
+    color:white;
+    font-size:14px;
+}
+
+/* ===== CONTAINER ===== */
+.container{
+    max-width:1100px;
+    margin:35px auto;
+    background:var(--card);
+    padding:30px;
+    border-radius:12px;
+    box-shadow:0 8px 25px rgba(0,0,0,0.08);
+    transition:0.3s;
+}
+
+/* ===== ALERT ===== */
+.alert{
+    background:#ecfdf5;
+    padding:10px;
+    border-left:4px solid var(--accent);
+    margin-bottom:15px;
+}
+
+/* DARK ALERT */
+body.dark .alert{
+    background:#022c22;
+}
+
+/* ===== FOOTER ===== */
+.footer{
+    text-align:center;
+    padding:20px;
+    color:#94a3b8;
+}
+
+</style>
+</head>
+
+<body>
+
+<!-- NAVBAR -->
+<div class="navbar">
+    <div class="logo">🥗 AI Nutrition System</div>
+
+    <div class="nav-links">
+
+        {% if user.is_authenticated %}
+            Welcome {{ user.username }}
+            <a href="{% url 'profile' %}">Profile</a>
+            <a href="{% url 'dashboard' %}">Dashboard</a>
+            <a href="{% url 'progress_dashboard' %}">Progress</a>
+            <a href="{% url 'recommendations' %}">Meals</a>
+            <a href="{% url 'logout' %}">Logout</a>
+        {% else %}
+            <a href="{% url 'login' %}">Login</a>
+            <a href="{% url 'register' %}">Register</a>
+        {% endif %}
+
+        <!-- DARK MODE BUTTON -->
+        <button class="toggle-btn" onclick="toggleDarkMode()">
+            🌙
+        </button>
+
+    </div>
+</div>
+
+<!-- CONTENT -->
+<div class="container">
+
+{% if messages %}
+    {% for message in messages %}
+        <div class="alert">{{ message }}</div>
+    {% endfor %}
+{% endif %}
+
+{% block content %}
+{% endblock %}
+
+</div>
+
+<div class="footer">
+© 2026 AI Nutrition System
+</div>
+
+
+<script>
+
+/* ===== LOAD SAVED MODE ===== */
+if(localStorage.getItem("darkMode") === "enabled"){
+    document.body.classList.add("dark");
+}
+
+/* ===== TOGGLE FUNCTION ===== */
+function toggleDarkMode(){
+    document.body.classList.toggle("dark");
+
+    if(document.body.classList.contains("dark")){
+        localStorage.setItem("darkMode","enabled");
+    }else{
+        localStorage.setItem("darkMode","disabled");
+    }
+}
+
+</script>
+
+<!-- AVATAR WIDGET -->
+<div id="avatar-widget">
+    <div id="avatar-chat-box">
+        <div id="avatar-chat-header">
+            <span>Avatar Assistant</span>
+            <span id="avatar-chat-close">&times;</span>
+        </div>
+        <div id="avatar-chat-messages">
+            <div class="avatar-message message-bot">Hi {% if user.is_authenticated %}{{ user.first_name|default:user.username }}{% else %}there{% endif %}! How can I help you today? Try saying "Hii" or ask about your "diet plan", "progress", "goals" or "meals".</div>
+        </div>
+        <div id="avatar-chat-input-container">
+            <input type="text" id="avatar-chat-input" placeholder="Type a message...">
+            <button id="avatar-chat-send">Send</button>
+        </div>
+    </div>
+    
+    <!-- FEEDBACK WIDGET -->
+    <div id="feedback-modal" style="display:none;">
+        <div class="feedback-modal-header">
+            <span>Send Feedback</span>
+            <span id="feedback-modal-close">&times;</span>
+        </div>
+        <div class="feedback-modal-body">
+            <textarea id="feedback-textarea" placeholder="We'd love to hear your thoughts..."></textarea>
+            <button id="submit-feedback-btn">Submit</button>
+            <div id="feedback-message" style="display:none; color: green; margin-top: 10px; font-size: 13px;"></div>
+        </div>
+    </div>
+
+    <div id="avatar-character-container">
+        <span id="avatar-character-emoji">👩🏻‍⚕️</span>
+    </div>
+    <div id="avatar-feedback-btn" title="Send Feedback">💡</div>
+</div>
+<script src="{% static 'js/avatar.js' %}?v=3"></script>
+
+</body>
+</html>

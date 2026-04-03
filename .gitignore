@@ -1,0 +1,80 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyo
+*.pyd
+*.so
+
+# Virtual Environment
+venv/
+env/
+ENV/
+.venv/
+.env
+
+# Django
+*.log
+local_settings.py
+db.sqlite3
+db.sqlite3-journal
+media/
+
+# Static files collected
+staticfiles/
+static_collected/
+
+# Environment variables / secrets
+.env
+*.env
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Large CSV data files (too big for git)
+food.csv
+food_nutrient.csv
+food_update_log_entry.csv
+sub_sample_result.csv
+sub_sample_food.csv
+market_acquisition.csv
+food_nutrient_conversion_factor.csv
+food_portion.csv
+food_attribute.csv
+input_food.csv
+acquisition_samples.csv
+agricultural_samples.csv
+food_component.csv
+nutrient.csv
+lab_method.csv
+lab_method_code.csv
+lab_method_nutrient.csv
+food_calorie_conversion_factor.csv
+food_protein_conversion_factor.csv
+food_attribute_type.csv
+food_category.csv
+measure_unit.csv
+foundation_food.csv
+sample_food.csv
+
+# ML model files
+*.pkl
+*.joblib
+*.h5
+*.model
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Distribution
+dist/
+build/
+*.egg-info/

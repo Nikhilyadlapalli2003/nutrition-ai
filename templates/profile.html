@@ -1,0 +1,197 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<style>
+
+/* ===== PAGE WRAPPER ===== */
+.profile-wrapper{
+    position: relative;
+    padding: 40px 20px;
+}
+
+/* Background Image */
+.profile-wrapper::before{
+    content:"";
+    position:absolute;
+    inset:0;
+    background:url("https://images.unsplash.com/photo-1498837167922-ddd27525d352") center/cover no-repeat;
+    filter:brightness(0.35);
+    border-radius:14px;
+}
+
+/* ===== PROFILE CARD ===== */
+.profile-card{
+    position:relative;
+    z-index:2;
+    max-width:850px;
+    margin:auto;
+    background:rgba(255,255,255,0.95);
+    padding:35px;
+    border-radius:14px;
+    box-shadow:0 12px 40px rgba(0,0,0,0.25);
+}
+
+.profile-card h3{
+    text-align:center;
+    margin-bottom:25px;
+    color:#1e3a8a;
+    font-weight:600;
+}
+
+/* ===== FORM GRID ===== */
+.form-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+    gap:20px;
+}
+
+/* ===== INPUT STYLE ===== */
+.form-group label{
+    display:block;
+    font-size:14px;
+    margin-bottom:6px;
+    color:#374151;
+    font-weight:500;
+}
+
+.form-group input,
+.form-group select{
+    width:100%;
+    padding:11px 12px;
+    border-radius:8px;
+    border:1px solid #d1d5db;
+    font-size:14px;
+    transition:0.3s;
+}
+
+.form-group input:focus,
+.form-group select:focus{
+    outline:none;
+    border-color:#22c55e;
+    box-shadow:0 0 0 2px rgba(34,197,94,0.2);
+}
+
+/* ===== BUTTON ===== */
+.save-btn{
+    margin-top:25px;
+    width:100%;
+    padding:13px;
+    background:#22c55e;
+    border:none;
+    border-radius:8px;
+    color:white;
+    font-size:15px;
+    font-weight:600;
+    cursor:pointer;
+    transition:0.3s;
+}
+
+.save-btn:hover{
+    background:#16a34a;
+    transform:translateY(-1px);
+}
+
+.subtitle{
+    text-align:center;
+    color:#6b7280;
+    margin-bottom:25px;
+    font-size:14px;
+}
+
+</style>
+
+
+<div class="profile-wrapper">
+
+    <div class="profile-card">
+
+        <h3>🩺 Complete Your Health Profile</h3>
+        <p class="subtitle">
+            Provide accurate details to receive AI-powered personalized nutrition recommendations.
+        </p>
+
+        <form method="POST">
+            {% csrf_token %}
+
+            <div class="form-grid">
+
+                <div class="form-group">
+                    <label>Age</label>
+                    <input type="number" name="age" value="{{ profile.age }}" min="10" max="100" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Gender</label>
+                    <select name="gender" required>
+                        <option value="" disabled {% if not profile.gender %}selected{% endif %}>Select gender</option>
+                        <option value="male" {% if profile.gender == "male" %}selected{% endif %}>Male</option>
+                        <option value="female" {% if profile.gender == "female" %}selected{% endif %}>Female</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Height (cm)</label>
+                    <input type="number" step="0.1" name="height" value="{{ profile.height }}" min="100" max="220" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Weight (kg)</label>
+                    <input type="number" step="0.1" name="weight" value="{{ profile.weight }}" min="30" max="200" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Activity Level</label>
+                    <select name="activity_level" required>
+                        <option value="" disabled {% if not profile.activity_level %}selected{% endif %}>Select level</option>
+                        <option value="sedentary" {% if profile.activity_level == "sedentary" %}selected{% endif %}>Sedentary</option>
+                        <option value="light" {% if profile.activity_level == "light" %}selected{% endif %}>Light</option>
+                        <option value="moderate" {% if profile.activity_level == "moderate" %}selected{% endif %}>Moderate</option>
+                        <option value="active" {% if profile.activity_level == "active" %}selected{% endif %}>Active</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Health Condition</label>
+                    <select name="health_condition" required>
+                        <option value="" disabled {% if not profile.health_condition %}selected{% endif %}>Select condition</option>
+                        {% for code,label in condition_choices %}
+                            <option value="{{ code }}" {% if profile.health_condition == code %}selected{% endif %}>{{ label }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Dietary Preference</label>
+                    <select name="dietary_preference" required>
+                        <option value="" disabled {% if not profile.dietary_preference %}selected{% endif %}>Select preference</option>
+                        <option value="veg" {% if profile.dietary_preference == "veg" %}selected{% endif %}>Vegetarian</option>
+                        <option value="nonveg" {% if profile.dietary_preference == "nonveg" %}selected{% endif %}>Non-Vegetarian</option>
+                        <option value="vegan" {% if profile.dietary_preference == "vegan" %}selected{% endif %}>Vegan</option>
+                        <option value="keto" {% if profile.dietary_preference == "keto" %}selected{% endif %}>Keto</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Goal</label>
+                    <select name="goal" required>
+                        <option value="" disabled {% if not profile.goal %}selected{% endif %}>Select goal</option>
+                        <option value="loss" {% if profile.goal == "loss" %}selected{% endif %}>Weight Loss</option>
+                        <option value="maintain" {% if profile.goal == "maintain" %}selected{% endif %}>Maintain</option>
+                        <option value="gain" {% if profile.goal == "gain" %}selected{% endif %}>Muscle Gain</option>
+                    </select>
+                </div>
+
+            </div>
+
+            <button type="submit" class="save-btn">
+                💾 Save Health Profile
+            </button>
+
+        </form>
+
+    </div>
+
+</div>
+
+{% endblock %}

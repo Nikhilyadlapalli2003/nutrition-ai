@@ -1,0 +1,169 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<style>
+
+/* ===== HERO SECTION ===== */
+.hero {
+    position: relative;
+    height: 70vh;
+    border-radius: 14px;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    color: white;
+    margin-bottom: 40px;
+}
+
+/* Background Image */
+.hero::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: url("https://images.unsplash.com/photo-1490645935967-10de6ba17061") center/cover no-repeat;
+    filter: brightness(0.45);
+}
+
+/* Content above overlay */
+.hero-content {
+    position: relative;
+    z-index: 2;
+    max-width: 700px;
+}
+
+.hero h1 {
+    font-size: 38px;
+    font-weight: 700;
+    margin-bottom: 15px;
+}
+
+.hero p {
+    font-size: 18px;
+    opacity: 0.95;
+    line-height: 1.6;
+}
+
+/* Quote box */
+.quote {
+    margin-top: 20px;
+    font-style: italic;
+    font-size: 16px;
+    background: rgba(255,255,255,0.15);
+    padding: 12px 18px;
+    border-radius: 8px;
+}
+
+/* ===== FEATURES ===== */
+.features {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px,1fr));
+    gap: 25px;
+}
+
+.feature-card {
+    background: white;
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.06);
+    transition: 0.3s ease;
+    text-align: center;
+}
+
+.feature-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+}
+
+.feature-card h4 {
+    margin-bottom: 10px;
+    color: #1e3a8a;
+}
+
+.feature-card p {
+    font-size: 14px;
+    color: #4b5563;
+}
+
+/* CTA Button */
+.cta-btn {
+    margin-top: 20px;
+    display: inline-block;
+    padding: 12px 22px;
+    background: #22c55e;
+    color: white;
+    text-decoration: none;
+    border-radius: 8px;
+    font-weight: 500;
+    transition: 0.3s;
+}
+
+.cta-btn:hover {
+    background: #16a34a;
+}
+
+</style>
+
+
+<!-- HERO SECTION -->
+<div class="hero">
+    <div class="hero-content">
+        <h1>🥗 AI Personalized Nutrition System</h1>
+
+        <p>
+            Smart nutrition powered by Artificial Intelligence.
+            Get personalized meal plans, health insights, and
+            data-driven dietary recommendations designed just for you.
+        </p>
+
+        <div class="quote">
+            “Let food be thy medicine and medicine be thy food.” — Hippocrates
+        </div>
+
+        <a href="{% url 'recommendations' %}" class="cta-btn">
+            Get Your Meal Plan →
+        </a>
+    </div>
+</div>
+
+
+<!-- FEATURES SECTION -->
+<div class="features">
+
+    <div class="feature-card">
+        <h4>🤖 AI-Based Analysis</h4>
+        <p>
+            Intelligent algorithms analyze your health data
+            to recommend optimal nutrition plans.
+        </p>
+    </div>
+
+    <div class="feature-card">
+        <h4>🍎 Personalized Meals</h4>
+        <p>
+            Customized diet suggestions based on BMI,
+            lifestyle, and health conditions.
+        </p>
+    </div>
+
+    <div class="feature-card">
+        <h4>📊 Health Monitoring</h4>
+        <p>
+            Track nutrition intake and improve wellness
+            through smart data insights.
+        </p>
+    </div>
+
+    <div class="feature-card">
+        <h4>⚡ Smart Recommendations</h4>
+        <p>
+            Real-time meal suggestions powered by
+            machine learning intelligence.
+        </p>
+    </div>
+
+</div>
+
+{% endblock %}

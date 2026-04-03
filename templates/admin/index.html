@@ -1,0 +1,48 @@
+{% extends "admin/base_site.html" %}
+{% load static %}
+
+{% block title %}Nutrition AI Admin Dashboard{% endblock %}
+
+{% block branding %}
+<h1 id="site-name"><a href="{% url 'admin:index' %}">Nutrition AI Administration</a></h1>
+{% endblock %}
+
+{% block nav-global %}{% endblock %}
+
+{% block content %}
+<div id="content-main">
+    <div class="module">
+        <h2>Quick Actions</h2>
+        <ul class="actionlist">
+            <li><a href="{% url 'admin:nutrition_food_changelist' %}" class="viewsitelink">Manage Food Database</a></li>
+            <li><a href="{% url 'admin:auth_user_changelist' %}" class="viewsitelink">Manage Users</a></li>
+            <li><a href="{% url 'admin:accounts_userprofile_changelist' %}" class="viewsitelink">Manage User Profiles</a></li>
+        </ul>
+    </div>
+
+    <div class="module">
+        <h2>Analytics Dashboard</h2>
+        <ul class="actionlist">
+            <li><a href="{% url 'admin:nutrition_food_changelist' %}" class="viewsitelink">Food Database Stats</a></li>
+        </ul>
+    </div>
+
+    <div class="module">
+        <h2>Recent Activity</h2>
+        <p>Recent user registrations, meal logs, and system activity will be displayed here.</p>
+        <!-- You can add more dynamic content here -->
+    </div>
+</div>
+
+<div id="content-related">
+    <div class="module">
+        <h3>System Status</h3>
+        <ul>
+            <li><strong>Database:</strong> Connected</li>
+            <li><strong>ML Models:</strong> Active</li>
+            <li><strong>Users:</strong> {{ user_count|default:"N/A" }}</li>
+            <li><strong>Foods:</strong> {{ food_count|default:"N/A" }}</li>
+        </ul>
+    </div>
+</div>
+{% endblock %}

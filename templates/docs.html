@@ -1,0 +1,239 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<style>
+.docs-header {
+    background: linear-gradient(135deg, #1e3a8a, #3b82f6);
+    color: white;
+    padding: 60px 40px;
+    border-radius: 12px;
+    text-align: center;
+    margin-bottom: 30px;
+}
+.docs-header h1 {
+    font-size: 36px;
+    margin-bottom: 10px;
+    font-weight: 700;
+}
+.docs-header p {
+    font-size: 18px;
+    opacity: 0.9;
+}
+.docs-container {
+    display: grid;
+    grid-template-columns: 250px 1fr;
+    gap: 30px;
+    align-items: start;
+}
+.docs-sidebar {
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    position: sticky;
+    top: 20px;
+}
+.docs-sidebar h3 {
+    color: #1e3a8a;
+    margin-bottom: 15px;
+    font-size: 18px;
+    border-bottom: 2px solid #e5e7eb;
+    padding-bottom: 10px;
+}
+.docs-sidebar ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+.docs-sidebar li {
+    margin-bottom: 8px;
+}
+.docs-sidebar a {
+    text-decoration: none;
+    color: #4b5563;
+    transition: all 0.2s ease;
+    display: block;
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-weight: 500;
+}
+.docs-sidebar a:hover {
+    color: #2563eb;
+    background: #eff6ff;
+}
+.docs-content {
+    background: white;
+    padding: 40px;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+}
+.docs-section {
+    margin-bottom: 40px;
+}
+.docs-section:last-child {
+    margin-bottom: 0;
+}
+.docs-section h2 {
+    color: #1e3a8a;
+    border-bottom: 1px solid #e5e7eb;
+    padding-bottom: 15px;
+    margin-bottom: 20px;
+    font-size: 26px;
+}
+.docs-section h3 {
+    color: #374151;
+    margin: 25px 0 15px;
+    font-size: 20px;
+}
+.docs-section p, .docs-section ul, .docs-section li {
+    color: #4b5563;
+    line-height: 1.7;
+    margin-bottom: 15px;
+    font-size: 16px;
+}
+.docs-section ul {
+    padding-left: 20px;
+}
+.docs-code {
+    background: #1f2937;
+    color: #f3f4f6;
+    padding: 20px;
+    border-radius: 8px;
+    font-family: 'Courier New', Courier, monospace;
+    overflow-x: auto;
+    margin-bottom: 20px;
+    font-size: 14px;
+    line-height: 1.6;
+}
+@media (max-width: 768px) {
+    .docs-container {
+        grid-template-columns: 1fr;
+    }
+    .docs-sidebar {
+        position: relative;
+        top: 0;
+    }
+}
+</style>
+
+<div class="docs-header">
+    <h1>📚 Project Documentation</h1>
+    <p>Complete guide to Nutrition AI features and how to use them.</p>
+</div>
+
+<div class="docs-container">
+    <aside class="docs-sidebar">
+        <h3>Contents</h3>
+        <ul>
+            <li><a href="#introduction">Introduction</a></li>
+            <li><a href="#profile-metrics">Profile & Metrics</a></li>
+            <li><a href="#nutrition-engine">Nutrition Engine</a></li>
+            <li><a href="#meal-logging">Meal Logging</a></li>
+            <li><a href="#ai-avatar">AI Avatar Guide</a></li>
+            <li><a href="#dashboard-analytics">Dashboard Analytics</a></li>
+            <li><a href="#faq">FAQ</a></li>
+            <li><a href="#feedback">Feedback & Support</a></li>
+        </ul>
+    </aside>
+
+    <main class="docs-content">
+        <section id="introduction" class="docs-section">
+            <h2>Introduction</h2>
+            <p>Welcome to the comprehensive documentation for the <strong>Nutrition AI Platform</strong>. This system is designed to provide highly personalized, data-driven dietary recommendations using intelligent algorithms.</p>
+            <p>Our platform takes your biological metrics, daily activity levels, and personal health goals to dynamically construct meal plans and track your progress over time.</p>
+        </section>
+
+        <section id="profile-metrics" class="docs-section">
+            <h2>Profile & Biological Metrics</h2>
+            <p>Your journey begins with accurate profile data. The system relies on four core biological inputs:</p>
+            <ul>
+                <li><strong>Age & Gender:</strong> Used as the baseline for metabolic rate calculations.</li>
+                <li><strong>Height & Weight:</strong> Necessary for calculating your Body Mass Index (BMI) and energy requirements.</li>
+                <li><strong>Activity Level:</strong> Ranging from sedentary to highly active, used as a multiplier for daily energy expenditure.</li>
+                <li><strong>Primary Goal:</strong> Weight Loss, Muscle Gain, or Maintenance.</li>
+            </ul>
+            <h3>The Science Behind the Calculations</h3>
+            <p>Our engine calculates your <strong>Basal Metabolic Rate (BMR)</strong> using clinically recognized formulas (like the Mifflin-St Jeor equation). This represents the calories your body burns at rest.</p>
+            <p>By applying your activity multiplier to the BMR, we calculate your <strong>Total Daily Energy Expenditure (TDEE)</strong>, which dictates exactly how many calories you need daily.</p>
+        </section>
+
+        <section id="nutrition-engine" class="docs-section">
+            <h2>The Nutrition Engine</h2>
+            <p>Once your TDEE is calculated, the Nutrition Engine generates your daily caloric targets and macronutrient split.</p>
+            <h3>Caloric Adjustments</h3>
+            <p>If your goal is <em>Weight Loss</em>, the algorithm applies a healthy caloric deficit (typically 300-500 calories below TDEE) to ensure sustainable fat loss without compromising metabolism.</p>
+            <p>For <em>Muscle Gain</em>, a controlled caloric surplus is applied with an increased protein baseline to facilitate muscle protein synthesis.</p>
+            <h3>Macronutrient Generation</h3>
+            <ul>
+                <li><strong>Protein:</strong> Prioritized for satiety and muscle preservation/growth (adjusted based on body weight).</li>
+                <li><strong>Fats:</strong> Set to support hormonal health and nutrient absorption.</li>
+                <li><strong>Carbohydrates:</strong> Allocated to fulfill remaining energy requirements after protein and fats are established.</li>
+            </ul>
+        </section>
+
+        <section id="meal-logging" class="docs-section">
+            <h2>Meal Logging & Tracking</h2>
+            <p>Consistency is key to success. The platform allows you to log meals throughout the day to track your total intake.</p>
+            <p>As you log your food entries, the system automatically tallies your calories and compares them against your dynamically generated daily target. Keeping daily logs ensures the AI Avatar and the Dashboard accurately reflect your current adherence.</p>
+        </section>
+
+        <section id="ai-avatar" class="docs-section">
+            <h2>AI Avatar Guide</h2>
+            <p>The AI Avatar is an interactive, conversational interface built right into the app. It provides instant access to your diet plans, current progress, and daily logs.</p>
+            <h3>Example Commands</h3>
+            <p>You can ask the Avatar contextual questions. Examples include:</p>
+            <div class="docs-code">
+                - "What is my diet plan?" -> Retrieves your target calories and precise macronutrient split.<br>
+                - "Show me my progress!" -> Reports your weight change, calorie adherence percentage, and streak.<br>
+                - "What are my goals?" -> Reminds you of your primary objective and target weight.<br>
+                - "What have I eaten today?" -> Summarizes your logged meals and total calories consumed so far today.
+            </div>
+            <p>Depending on your progress and the command, the Avatar will respond with different animations (e.g., giving a thumbs-up for good progress).</p>
+        </section>
+
+        <section id="dashboard-analytics" class="docs-section">
+            <h2>Dashboard Analytics</h2>
+            <p>Your Dashboard translates your logged data into actionable visual insights.</p>
+            <ul>
+                <li><strong>Weight Trend:</strong> A historical graph showing your weight fluctuations over time. Update your weight weekly for the best results.</li>
+                <li><strong>Caloric Adherence:</strong> A specific metric that calculates how closely you hit your daily caloric target. (e.g., hitting within 5% of your target yields higher adherence scores than missing by 20%).</li>
+                <li><strong>Consistency Streak:</strong> Tracks the consecutive number of days you have successfully logged meals and stayed within an acceptable range of your targets.</li>
+            </ul>
+        </section>
+
+        <section id="faq" class="docs-section">
+            <h2>Frequently Asked Questions</h2>
+            <h3>How do I change my goal?</h3>
+            <p>Navigate to the Profile Settings in your Accounts tab. Once you update your goal or current weight, your TDEE and meal recommendations will automatically recalculate.</p>
+            <h3>Is my health data secure?</h3>
+            <p>Yes. Your privacy is paramount. Your health metrics, age, weight, and dietary logs are completely private and only utilized to power your personal dashboard and avatar interactions.</p>
+            <h3>Can I use this without tracking calories?</h3>
+            <p>While the AI provides generalized meal recommendations, the core tracking features and AI Avatar functions perform best when you actively log your daily intake.</p>
+            <h3>Why do my calorie targets change?</h3>
+            <p>As you lose or gain weight, your TDEE naturally shifts. Updating your current weight in the system ensures your calorie targets adapt to your new body composition.</p>
+        </section>
+
+        <section id="feedback" class="docs-section">
+            <h2>Feedback & Support</h2>
+            <p>We are constantly looking to improve Nutrition AI! If you encounter any bugs, have feature requests, or simply want to share your success story, we would love to hear from you.</p>
+            <p>You can send your feedback in the following ways:</p>
+            <ul>
+                <li><strong>Email Support:</strong> Reach out to our team at <a href="mailto:support@nutritionai.com" style="color: #2563eb; text-decoration: none;">support@nutritionai.com</a>.</li>
+                <li><strong>GitHub Issues:</strong> If you are a developer and have found a technical issue, please open an issue on our project repository.</li>
+            </ul>
+        </section>
+    </main>
+</div>
+
+<script>
+    // Smooth scrolling for sidebar links
+    document.querySelectorAll('.docs-sidebar a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+            e.preventDefault();
+            document.querySelector(this.getAttribute('href')).scrollIntoView({
+                behavior: 'smooth'
+            });
+        });
+    });
+</script>
+{% endblock %}

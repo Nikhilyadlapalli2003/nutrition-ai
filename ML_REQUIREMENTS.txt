@@ -1,0 +1,17 @@
+# Machine Learning Requirements
+# Add these to your main requirements.txt
+
+# Core ML Libraries
+scikit-learn>=1.0.0          # K-Nearest Neighbors, preprocessing, vector operations
+numpy>=1.21.0                # Numerical computations for vectors/matrices
+scipy>=1.7.0                 # Scientific computing (dependency of scikit-learn)
+
+# Optional: For future enhancements
+# pandas>=1.3.0              # Data manipulation (for Option B,C,D)
+# xgboost>=1.5.0             # Gradient boosting (for Random Forest alternatives)
+# matplotlib>=3.4.0          # Visualization of recommendations
+# seaborn>=0.11.0            # Statistical data visualization
+
+# Existing Django dependencies (ensure these are already installed)
+Django>=3.2
+djangorestframework>=3.12.0  # For API views (optional)

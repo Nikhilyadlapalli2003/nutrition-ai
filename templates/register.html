@@ -1,0 +1,133 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<style>
+
+/* ===== REGISTER WRAPPER ===== */
+.register-wrapper{
+    min-height:75vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    position:relative;
+}
+
+/* Background Image */
+.register-wrapper::before{
+    content:"";
+    position:absolute;
+    inset:0;
+    background:url("https://images.unsplash.com/photo-1498837167922-ddd27525d352") center/cover no-repeat;
+    filter:brightness(0.45);
+    border-radius:14px;
+}
+
+/* ===== CARD ===== */
+.register-card{
+    position:relative;
+    z-index:2;
+    width:400px;
+    padding:38px;
+    border-radius:14px;
+    background:rgba(255,255,255,0.15);
+    backdrop-filter:blur(14px);
+    box-shadow:0 12px 35px rgba(0,0,0,0.25);
+    text-align:center;
+    color:white;
+}
+
+.register-card h3{
+    margin-bottom:25px;
+    font-weight:600;
+}
+
+/* ===== INPUTS ===== */
+.input-group{
+    margin-bottom:18px;
+}
+
+.input-group input{
+    width:100%;
+    padding:12px 14px;
+    border-radius:8px;
+    border:none;
+    outline:none;
+    font-size:14px;
+}
+
+.input-group input:focus{
+    box-shadow:0 0 0 2px #22c55e;
+}
+
+/* ===== BUTTON ===== */
+.register-btn{
+    width:100%;
+    padding:12px;
+    border:none;
+    border-radius:8px;
+    background:#22c55e;
+    color:white;
+    font-size:15px;
+    font-weight:600;
+    cursor:pointer;
+    transition:0.3s;
+}
+
+.register-btn:hover{
+    background:#16a34a;
+}
+
+/* ===== EXTRA TEXT ===== */
+.extra-text{
+    margin-top:16px;
+    font-size:13px;
+}
+
+.extra-text a{
+    color:#bbf7d0;
+    text-decoration:none;
+    font-weight:500;
+}
+
+.extra-text a:hover{
+    text-decoration:underline;
+}
+
+</style>
+
+
+<div class="register-wrapper">
+
+    <div class="register-card">
+
+        <h3>🧾 Create Your Account</h3>
+
+        <form method="POST">
+            {% csrf_token %}
+
+            <div class="input-group">
+                <input type="text" name="username"
+                       placeholder="Choose Username" required>
+            </div>
+
+            <div class="input-group">
+                <input type="password" name="password"
+                       placeholder="Create Password" required>
+            </div>
+
+            <button type="submit" class="register-btn">
+                Register
+            </button>
+        </form>
+
+        <div class="extra-text">
+            Already have an account?
+            <a href="{% url 'login' %}">Login here</a>
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

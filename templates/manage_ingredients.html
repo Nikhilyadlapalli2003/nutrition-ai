@@ -1,0 +1,339 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<style>
+/* ===== PAGE BACKGROUND ===== */
+.main-wrapper{
+    background:linear-gradient(135deg,#eef2ff,#f8fafc);
+    padding:25px;
+    border-radius:14px;
+    min-height:80vh;
+}
+
+/* ===== HEADER ===== */
+.page-header{
+    background:linear-gradient(135deg,#1e3a8a,#2563eb);
+    color:white;
+    padding:25px;
+    border-radius:12px;
+    margin-bottom:25px;
+}
+
+.page-header h2{
+    margin:0;
+    font-weight:600;
+}
+
+/* ===== ADD INGREDIENT FORM ===== */
+.add-form{
+    background:white;
+    border-radius:14px;
+    padding:25px;
+    margin-bottom:25px;
+    box-shadow:0 10px 25px rgba(0,0,0,0.08);
+}
+
+.form-row{
+    display:grid;
+    grid-template-columns:2fr 1fr 1fr auto;
+    gap:15px;
+    align-items:end;
+    margin-bottom:20px;
+}
+
+.form-group{
+    display:flex;
+    flex-direction:column;
+}
+
+.form-group label{
+    font-weight:500;
+    margin-bottom:5px;
+    color:#374151;
+}
+
+.form-input{
+    padding:10px;
+    border:2px solid #e5e7eb;
+    border-radius:6px;
+    font-size:14px;
+}
+
+.form-input:focus{
+    outline:none;
+    border-color:#2563eb;
+}
+
+/* ===== INGREDIENT LIST ===== */
+.ingredients-section{
+    background:white;
+    border-radius:14px;
+    overflow:hidden;
+    box-shadow:0 10px 25px rgba(0,0,0,0.08);
+}
+
+.ingredients-header{
+    background:#f1f5f9;
+    padding:16px 20px;
+    font-weight:600;
+    font-size:18px;
+    border-bottom:1px solid #e5e7eb;
+}
+
+.ingredient-item{
+    padding:16px 20px;
+    border-bottom:1px solid #f1f5f9;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+}
+
+.ingredient-info{
+    display:flex;
+    align-items:center;
+    gap:15px;
+}
+
+.ingredient-name{
+    font-weight:500;
+    color:#1e293b;
+}
+
+.ingredient-details{
+    color:#6b7280;
+    font-size:14px;
+}
+
+.ingredient-actions{
+    display:flex;
+    gap:8px;
+}
+
+/* ===== BUTTONS ===== */
+.btn{
+    padding:8px 16px;
+    border-radius:6px;
+    text-decoration:none;
+    font-size:14px;
+    font-weight:500;
+    border:none;
+    cursor:pointer;
+    transition:background 0.2s;
+}
+
+.btn-add{
+    background:#22c55e;
+    color:white;
+}
+
+.btn-add:hover{
+    background:#16a34a;
+}
+
+.btn-remove{
+    background:#ef4444;
+    color:white;
+}
+
+.btn-remove:hover{
+    background:#dc2626;
+}
+
+.btn-update{
+    background:#f59e0b;
+    color:white;
+}
+
+.btn-update:hover{
+    background:#d97706;
+}
+
+.btn-secondary{
+    background:#6b7280;
+    color:white;
+}
+
+.btn-secondary:hover{
+    background:#4b5563;
+}
+
+/* ===== EMPTY STATE ===== */
+.empty-state{
+    text-align:center;
+    padding:40px;
+    color:#6b7280;
+}
+
+.empty-state h3{
+    margin-bottom:10px;
+    color:#374151;
+}
+
+/* ===== QUICK ADD ===== */
+.quick-add{
+    background:#f8fafc;
+    padding:15px;
+    border-radius:8px;
+    margin-bottom:20px;
+}
+
+.quick-add h4{
+    margin:0 0 10px 0;
+    color:#374151;
+}
+
+.suggestions{
+    display:flex;
+    flex-wrap:wrap;
+    gap:8px;
+}
+
+.suggestion-btn{
+    background:#dbeafe;
+    color:#1e40af;
+    padding:6px 12px;
+    border-radius:15px;
+    font-size:13px;
+    border:none;
+    cursor:pointer;
+    transition:background 0.2s;
+}
+
+.suggestion-btn:hover{
+    background:#bfdbfe;
+}
+</style>
+
+<div class="main-wrapper">
+
+<!-- HEADER -->
+<div class="page-header">
+    <h2>📝 Manage Your Ingredients</h2>
+    <p>Add ingredients you have at home for personalized recommendations</p>
+</div>
+
+<!-- ADD INGREDIENT FORM -->
+<div class="add-form">
+    <h3 style="margin-top:0; color:#1e293b;">Add New Ingredient</h3>
+
+    <form method="post">
+        {% csrf_token %}
+        <input type="hidden" name="action" value="add">
+
+        <div class="form-row">
+            <div class="form-group">
+                <label>Ingredient Name:</label>
+                <input type="text" name="ingredient_name" class="form-input" placeholder="e.g., Chicken, Rice, Milk" required>
+            </div>
+
+            <div class="form-group">
+                <label>Quantity:</label>
+                <input type="number" name="quantity" class="form-input" step="0.1" min="0" value="1" required>
+            </div>
+
+            <div class="form-group">
+                <label>Unit:</label>
+                <select name="unit" class="form-input" required>
+                    <option value="pieces">pieces</option>
+                    <option value="kg">kg</option>
+                    <option value="g">g</option>
+                    <option value="l">l</option>
+                    <option value="ml">ml</option>
+                    <option value="cups">cups</option>
+                </select>
+            </div>
+
+            <button type="submit" class="btn btn-add">➕ Add</button>
+        </div>
+    </form>
+
+    <!-- QUICK ADD SUGGESTIONS -->
+    <div class="quick-add">
+        <h4>Quick Add Popular Ingredients:</h4>
+        <div class="suggestions">
+            {% for ing in all_ingredients|slice:":20" %}
+            <button class="suggestion-btn" onclick="quickAdd('{{ ing.name }}', 1, '{{ ing.unit }}')">
+                {{ ing.name }}
+            </button>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<!-- INGREDIENT LIST -->
+<div class="ingredients-section">
+    <div class="ingredients-header">
+        Your Ingredients ({{ user_ingredients|length }})
+    </div>
+
+    {% if user_ingredients %}
+        {% for user_ing in user_ingredients %}
+        <div class="ingredient-item">
+            <div class="ingredient-info">
+                <span class="ingredient-name">{{ user_ing.ingredient.name }}</span>
+                <span class="ingredient-details">
+                    {{ user_ing.quantity }} {{ user_ing.unit }}
+                    {% if user_ing.expiry_date %}
+                    • Expires: {{ user_ing.expiry_date|date:"M j, Y" }}
+                    {% endif %}
+                </span>
+            </div>
+
+            <div class="ingredient-actions">
+                <form method="post" style="display:inline;">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="remove">
+                    <input type="hidden" name="ingredient_id" value="{{ user_ing.ingredient.id }}">
+                    <button type="submit" class="btn btn-remove" onclick="return confirm('Remove this ingredient?')">🗑️</button>
+                </form>
+
+                <button class="btn btn-update" onclick="editQuantity({{ user_ing.ingredient.id }}, {{ user_ing.quantity }}, '{{ user_ing.unit }}')">
+                    ✏️
+                </button>
+            </div>
+        </div>
+        {% endfor %}
+    {% else %}
+        <div class="empty-state">
+            <h3>No ingredients added yet</h3>
+            <p>Add ingredients you have at home to get personalized meal recommendations.</p>
+        </div>
+    {% endif %}
+</div>
+
+<!-- ACTIONS -->
+<div style="text-align:center; margin-top:30px;">
+    <a href="{% url 'ingredient_recommendations' %}" class="btn btn-secondary">← Back to Recommendations</a>
+    <a href="{% url 'grocery_list' %}" class="btn">🛒 View Grocery List</a>
+</div>
+
+</div>
+
+<script>
+// Quick add function
+function quickAdd(name, quantity, unit) {
+    document.querySelector('input[name="ingredient_name"]').value = name;
+    document.querySelector('input[name="quantity"]').value = quantity;
+    document.querySelector('select[name="unit"]').value = unit;
+}
+
+// Edit quantity function
+function editQuantity(ingredientId, currentQuantity, unit) {
+    const newQuantity = prompt(`Update quantity for ingredient (${unit}):`, currentQuantity);
+    if (newQuantity !== null && newQuantity !== '') {
+        const form = document.createElement('form');
+        form.method = 'post';
+        form.innerHTML = `
+            <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+            <input type="hidden" name="action" value="update">
+            <input type="hidden" name="ingredient_id" value="${ingredientId}">
+            <input type="hidden" name="quantity" value="${newQuantity}">
+        `;
+        document.body.appendChild(form);
+        form.submit();
+    }
+}
+</script>
+
+{% endblock %}

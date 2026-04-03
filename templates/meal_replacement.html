@@ -1,0 +1,306 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<style>
+/* ===== PAGE BACKGROUND ===== */
+.main-wrapper{
+    background:linear-gradient(135deg,#eef2ff,#f8fafc);
+    padding:25px;
+    border-radius:14px;
+    min-height:80vh;
+}
+
+/* ===== HEADER ===== */
+.page-header{
+    background:linear-gradient(135deg,#1e3a8a,#2563eb);
+    color:white;
+    padding:25px;
+    border-radius:12px;
+    margin-bottom:25px;
+}
+
+.page-header h2{
+    margin:0;
+    font-weight:600;
+}
+
+.current-meal{
+    background:#f1f5f9;
+    padding:20px;
+    border-radius:12px;
+    margin-bottom:25px;
+    border-left:5px solid #2563eb;
+}
+
+/* ===== ALTERNATIVES GRID ===== */
+.alternatives-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(300px,1fr));
+    gap:20px;
+    margin-bottom:25px;
+}
+
+.alternative-card{
+    background:white;
+    border-radius:14px;
+    padding:20px;
+    box-shadow:0 10px 25px rgba(0,0,0,0.08);
+    border:2px solid #e5e7eb;
+    transition:all 0.3s ease;
+}
+
+.alternative-card:hover{
+    border-color:#2563eb;
+    transform:translateY(-2px);
+    box-shadow:0 15px 35px rgba(0,0,0,0.12);
+}
+
+.alternative-header{
+    font-weight:600;
+    font-size:18px;
+    margin-bottom:12px;
+    color:#1e293b;
+}
+
+.similarity-badge{
+    background:#22c55e;
+    color:white;
+    padding:4px 8px;
+    border-radius:12px;
+    font-size:12px;
+    font-weight:500;
+}
+
+.grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(120px,1fr));
+    gap:8px;
+    margin:12px 0;
+}
+
+.metric{
+    background:#f8fafc;
+    padding:8px;
+    border-radius:6px;
+    font-size:13px;
+    text-align:center;
+}
+
+/* ===== BUTTONS ===== */
+.actions{
+    margin-top:15px;
+    display:flex;
+    gap:10px;
+}
+
+.btn{
+    padding:10px 16px;
+    border-radius:8px;
+    text-decoration:none;
+    font-size:14px;
+    font-weight:500;
+    border:none;
+    cursor:pointer;
+    transition:all 0.2s ease;
+}
+
+.replace-btn{
+    background:#22c55e;
+    color:white;
+}
+
+.replace-btn:hover{
+    background:#16a34a;
+    transform:translateY(-1px);
+}
+
+.cancel-btn{
+    background:#6b7280;
+    color:white;
+}
+
+.cancel-btn:hover{
+    background:#4b5563;
+}
+
+/* ===== BACK BUTTON ===== */
+.back-btn{
+    background:#2563eb;
+    color:white;
+    padding:12px 20px;
+    border-radius:8px;
+    text-decoration:none;
+    font-weight:500;
+    display:inline-block;
+    margin-bottom:20px;
+}
+
+.back-btn:hover{
+    background:#1d4ed8;
+    color:white;
+}
+
+/* ===== LOADING STATE ===== */
+.loading{
+    opacity:0.6;
+    pointer-events:none;
+}
+
+.spinner{
+    display:inline-block;
+    width:16px;
+    height:16px;
+    border:2px solid #f3f3f3;
+    border-top:2px solid #2563eb;
+    border-radius:50%;
+    animation:spin 1s linear infinite;
+    margin-right:8px;
+}
+
+@keyframes spin{
+    0%{transform:rotate(0deg);}
+    100%{transform:rotate(360deg);}
+}
+</style>
+
+<div class="main-wrapper">
+
+<!-- BACK BUTTON -->
+<a href="{% url 'recommendations' %}" class="back-btn">← Back to Meal Plan</a>
+
+<!-- HEADER -->
+<div class="page-header">
+    <h2>🔄 Replace {{ meal_type|title }} Meal</h2>
+    <p>Choose a different meal option for your {{ meal_type }}</p>
+</div>
+
+<!-- CURRENT MEAL -->
+<div class="current-meal">
+    <h3>Current {{ meal_type|title }}: {{ current_food.name }}</h3>
+    <div class="grid">
+        <div class="metric">Calories: {{ current_food.adjusted_calories|default:current_food.calories|floatformat:2 }}</div>
+        <div class="metric">Protein: {{ current_food.adjusted_protein|default:current_food.protein|floatformat:2 }}g</div>
+        <div class="metric">Carbs: {{ current_food.adjusted_carbs|default:current_food.carbs|floatformat:2 }}g</div>
+        <div class="metric">Fats: {{ current_food.adjusted_fats|default:current_food.fats|floatformat:2 }}g</div>
+    </div>
+    <p><strong>Target Calories:</strong> {{ meal_target_calories|floatformat:2 }} kcal</p>
+</div>
+
+<!-- ALTERNATIVES -->
+<h3 style="color:#1e293b; margin-bottom:15px;">🍽 Alternative Options (Top 5 Similar Meals)</h3>
+
+<div class="alternatives-grid">
+{% for alt in alternatives %}
+<div class="alternative-card" data-food-id="{{ alt.food.id }}">
+    <div class="alternative-header">
+        {{ alt.food.name }}
+        <span class="similarity-badge">{{ alt.similarity_score|floatformat:1 }}% similar</span>
+    </div>
+
+    <div class="grid">
+        <div class="metric">Calories: {{ alt.food.adjusted_calories|default:alt.food.calories|floatformat:2 }}</div>
+        <div class="metric">Protein: {{ alt.food.adjusted_protein|default:alt.food.protein|floatformat:2 }}g</div>
+        <div class="metric">Carbs: {{ alt.food.adjusted_carbs|default:alt.food.carbs|floatformat:2 }}g</div>
+        <div class="metric">Fats: {{ alt.food.adjusted_fats|default:alt.food.fats|floatformat:2 }}g</div>
+    </div>
+
+    <div class="actions">
+        <button class="btn replace-btn" onclick="replaceMeal('{{ meal_type }}', {{ alt.food.id }}, this)">
+            🔄 Replace with this meal
+        </button>
+    </div>
+</div>
+{% empty %}
+<div class="alternative-card">
+    <p>No alternative meals found. Try different dietary preferences or check back later.</p>
+</div>
+{% endfor %}
+</div>
+
+</div>
+
+<script>
+// Replace meal functionality
+function replaceMeal(mealType, newFoodId, button) {
+    console.log('🔄 Meal replacement started');
+    console.log('  Meal Type:', mealType);
+    console.log('  Food ID:', newFoodId);
+    console.log('  Button:', button);
+    
+    // Show loading state
+    const originalHTML = button.innerHTML;
+    button.innerHTML = '<span class="spinner"></span>Replacing...';
+    button.classList.add('loading');
+    button.disabled = true;
+
+    // Prepare form data
+    const formData = new FormData();
+    formData.append('meal_type', mealType);
+    formData.append('new_food_id', newFoodId);
+    
+    console.log('📡 Sending request to API...');
+    console.log('  Endpoint: {% url "replace_meal_api" %}');
+    console.log('  FormData:', Object.fromEntries(formData));
+
+    // Make API call
+    fetch('{% url "replace_meal_api" %}', {
+        method: 'POST',
+        body: formData,
+        headers: {
+            'X-CSRFToken': '{{ csrf_token }}'
+        }
+    })
+    .then(response => {
+        console.log('📨 Response received:', response.status);
+        console.log('  Status:', response.status, response.statusText);
+        console.log('  Content-Type:', response.headers.get('content-type'));
+        
+        if (!response.ok) {
+            throw new Error(`HTTP Error: ${response.status} ${response.statusText}`);
+        }
+        return response.json();
+    })
+    .then(data => {
+        console.log('✅ JSON parsed successfully');
+        console.log('  Response data:', data);
+        
+        if (data.success) {
+            console.log('🎉 Success! Meal updated to:', data.new_meal.name);
+            
+            // Show success message
+            alert('✅ ' + data.message);
+            
+            // Redirect immediately to recommendations page which will show updated meal
+            console.log('🚀 Redirecting to recommendations page to show updated meal...');
+            window.location.href = '{% url "recommendations" %}';
+        } else {
+            console.error('❌ API returned error:', data.error);
+            alert('❌ Error: ' + (data.error || 'Unknown error occurred'));
+            button.innerHTML = originalHTML;
+            button.classList.remove('loading');
+            button.disabled = false;
+        }
+    })
+    .catch(error => {
+        console.error('🔴 Fetch failed:', error);
+        console.error('  Error message:', error.message);
+        console.error('  Stack:', error.stack);
+        
+        // Try to provide a helpful error message
+        let helpText = 'Please check your browser console (F12) for more details. ';
+        if (error.message.includes('Failed to fetch')) {
+            helpText = 'Network error - make sure the server is running. ';
+        } else if (error.message.includes('HTTP Error')) {
+            helpText = 'Server error - the API endpoint may not be working. ';
+        }
+        
+        alert('❌ Failed to replace meal: ' + error.message + '\n\n' + helpText);
+        button.innerHTML = originalHTML;
+        button.classList.remove('loading');
+        button.disabled = false;
+    });
+}
+</script>
+
+{% endblock %}

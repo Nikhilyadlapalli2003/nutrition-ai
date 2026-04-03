@@ -1,0 +1,446 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<style>
+
+/* ===== PAGE BACKGROUND ===== */
+.main-wrapper{
+    background:linear-gradient(135deg,#eef2ff,#f8fafc);
+    padding:25px;
+    border-radius:14px;
+}
+
+/* ===== HEADER ===== */
+.page-header{
+    background:linear-gradient(135deg,#1e3a8a,#2563eb);
+    color:white;
+    padding:25px;
+    border-radius:12px;
+    margin-bottom:25px;
+}
+
+.page-header h2{
+    margin:0;
+    font-weight:600;
+}
+
+.target{
+    opacity:0.9;
+    margin-top:6px;
+}
+
+/* ===== MEAL CARDS ===== */
+.meal-card{
+    background:white;
+    border-radius:14px;
+    margin-bottom:22px;
+    overflow:hidden;
+    box-shadow:0 10px 25px rgba(0,0,0,0.08);
+}
+
+.meal-header{
+    background:#f1f5f9;
+    padding:14px 20px;
+    font-weight:600;
+    font-size:18px;
+    border-bottom:1px solid #e5e7eb;
+}
+
+.meal-body{
+    padding:20px;
+}
+
+.grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+    gap:14px;
+}
+
+.metric{
+    background:#f8fafc;
+    padding:12px;
+    border-radius:8px;
+    font-size:14px;
+}
+
+/* ===== BUTTONS ===== */
+.actions{
+    margin-top:15px;
+}
+
+.btn{
+    padding:8px 16px;
+    border-radius:8px;
+    text-decoration:none;
+    font-size:14px;
+    font-weight:500;
+    margin-right:10px;
+}
+
+.accept{background:#22c55e;color:white;}
+.reject{background:#ef4444;color:white;}
+.change{background:#f59e0b;color:white;}
+
+.btn:hover{opacity:.9}
+
+/* ===== ANALYTICS ===== */
+.section-title{
+    margin:35px 0 15px;
+    font-weight:600;
+    color:#1e293b;
+}
+
+.chart-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(320px,1fr));
+    gap:20px;
+}
+
+.chart-card{
+    background:white;
+    padding:20px;
+    border-radius:12px;
+    box-shadow:0 8px 20px rgba(0,0,0,0.08);
+}
+
+/* ===== TABLE ===== */
+.table-card{
+    background:white;
+    border-radius:12px;
+    overflow:hidden;
+    box-shadow:0 8px 20px rgba(0,0,0,0.08);
+}
+
+table{
+    width:100%;
+    border-collapse:collapse;
+}
+
+th{
+    background:#1e3a8a;
+    color:white;
+    padding:12px;
+}
+
+td{
+    padding:10px;
+    text-align:center;
+    border-bottom:1px solid #eee;
+}
+
+/* ===== MICRO SUMMARY ===== */
+.summary{
+    background:white;
+    padding:22px;
+    border-radius:12px;
+    box-shadow:0 8px 20px rgba(0,0,0,0.08);
+}
+
+.summary p{
+    margin:6px 0;
+}
+
+</style>
+
+
+<div class="main-wrapper">
+
+<!-- HEADER -->
+<div class="page-header">
+    <h2>🥗 AI Structured Daily Meal Plan</h2>
+    <div class="target">
+        Daily Target: {{ target_calories|floatformat:2 }} kcal
+    </div>
+</div>
+
+
+<!-- ========== ALERTS SECTION ========== -->
+
+<!-- SODIUM ALERT -->
+{% if sodium_alert.alert %}
+<div style="background:#FEE2E2; border-left:4px solid #DC2626; padding:16px; margin-bottom:20px; border-radius:8px;">
+    <div style="display:flex; align-items:center; gap:10px;">
+        <span style="font-size:20px;">⚠️</span>
+        <div>
+            <strong style="color:#7F1D1D;">Sodium Alert</strong>
+            <p style="margin:4px 0 0; color:#9F1239; font-size:14px;">{{ sodium_alert.message }}</p>
+            <p style="margin:4px 0 0; color:#991B1B; font-size:12px;">Your daily sodium intake is at {{ sodium_alert.percentage|floatformat:0 }}% of the recommended limit.</p>
+        </div>
+    </div>
+</div>
+{% elif sodium_alert %}
+<div style="background:#DBEAFE; border-left:4px solid #2563EB; padding:16px; margin-bottom:20px; border-radius:8px;">
+    <div style="display:flex; align-items:center; gap:10px;">
+        <span style="font-size:20px;">✅</span>
+        <div>
+            <strong style="color:#1E40AF;">Sodium Status</strong>
+            <p style="margin:4px 0 0; color:#1E3A8A; font-size:14px;">{{ sodium_alert.message }}</p>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+
+<!-- SUGAR ALERT -->
+{% if sugar_alert.alert %}
+<div style="background:#FEF3C7; border-left:4px solid #F59E0B; padding:16px; margin-bottom:20px; border-radius:8px;">
+    <div style="display:flex; align-items:center; gap:10px;">
+        <span style="font-size:20px;">⚠️</span>
+        <div>
+            <strong style="color:#92400E;">Sugar Alert</strong>
+            <p style="margin:4px 0 0; color:#B45309; font-size:14px;">{{ sugar_alert.message }}</p>
+            <p style="margin:4px 0 0; color:#D97706; font-size:12px;">Your daily sugar intake is at {{ sugar_alert.percentage|floatformat:0 }}% of the recommended limit.</p>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+
+<!-- MEDICAL CONDITION COMPLIANCE -->
+{% if has_medical_condition and condition_compliance %}
+    {% if not condition_compliance.compliant %}
+        <div style="background:#FEE2E2; border-left:4px solid #DC2626; padding:16px; margin-bottom:20px; border-radius:8px;">
+            <div style="display:flex; align-items:center; gap:10px;">
+                <span style="font-size:20px;">⚠️</span>
+                <div style="flex:1;">
+                    <strong style="color:#7F1D1D;">{{ condition_compliance.condition }} Guidelines</strong>
+                    <p style="margin:6px 0 0; color:#9F1239; font-size:14px;">
+                        Some meals may not be optimized for your condition. Review the warnings below:
+                    </p>
+                    <ul style="margin:8px 0 0; padding-left:20px; color:#991B1B; font-size:13px;">
+                        {% for warning in condition_compliance.warnings %}
+                            <li>{{ warning }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+    {% else %}
+        <div style="background:#DCFCE7; border-left:4px solid #22C55E; padding:16px; margin-bottom:20px; border-radius:8px;">
+            <div style="display:flex; align-items:center; gap:10px;">
+                <span style="font-size:20px;">✅</span>
+                <div>
+                    <strong style="color:#166534;">{{ condition_compliance.condition }} Compliant</strong>
+                    <p style="margin:4px 0 0; color:#15803D; font-size:14px;">Your meal plan is optimized for your medical condition.</p>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+{% endif %}
+
+
+<!-- ALLERGIES DISPLAY -->
+{% if user_allergies %}
+<div style="background:#F3E8FF; border-left:4px solid #9333EA; padding:16px; margin-bottom:20px; border-radius:8px;">
+    <div style="display:flex; align-items:center; gap:10px;">
+        <span style="font-size:20px;">🚫</span>
+        <div style="flex:1;">
+            <strong style="color:#581C87;">Allergy Filter Active</strong>
+            <p style="margin:4px 0 0; color:#7E22CE; font-size:14px;">
+                Foods containing these allergens have been excluded: <strong>{{ user_allergies|join:', ' }}</strong>
+            </p>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+
+{% for meal_type, meal in meal_plan.items %}
+<div class="meal-card">
+
+<div class="meal-header">
+🍽 {{ meal_type|title }}
+</div>
+
+<div class="meal-body">
+
+{% if meal %}
+<p><strong>{{ meal.name }}</strong></p>
+
+<!-- ML SCORE BADGE -->
+{% if meal.suitability_score != None %}
+<div style="margin-bottom: 12px; display: inline-block; background: #E0E7FF; color: #4338CA; padding: 4px 10px; border-radius: 20px; font-size: 13px; font-weight: 600;">
+    🤖 ML Suitability: {{ meal.suitability_score }}%
+</div>
+{% endif %}
+
+<h4 class="section-title">Macronutrients</h4>
+<div class="grid">
+<div class="metric">Calories: {{ meal.adjusted_calories|default:meal.calories|floatformat:2 }}</div>
+<div class="metric">Protein: {{ meal.adjusted_protein|default:meal.protein|floatformat:2 }} g</div>
+<div class="metric">Carbs: {{ meal.adjusted_carbs|default:meal.carbs|floatformat:2 }} g</div>
+<div class="metric">Fats: {{ meal.adjusted_fats|default:meal.fats|floatformat:2 }} g</div>
+</div>
+
+<h4 class="section-title">Micronutrients</h4>
+<div class="grid">
+<div class="metric">Fiber: {{ meal.fiber|floatformat:2 }} g</div>
+<div class="metric">Iron: {{ meal.iron|floatformat:2 }} mg</div>
+<div class="metric">Calcium: {{ meal.calcium|floatformat:2 }} mg</div>
+<div class="metric">Sodium: {{ meal.sodium|floatformat:2 }} mg</div>
+<div class="metric">Vitamin C: {{ meal.vitamin_c|floatformat:2 }} mg</div>
+</div>
+
+<div class="actions">
+<a class="btn accept" href="{% url 'feedback' meal.id 'accept' %}">👍 Accept</a>
+<a class="btn reject" href="{% url 'feedback' meal.id 'reject' %}">👎 Reject</a>
+<a class="btn change" href="{% url 'meal_replacement' meal_type meal.id %}">🔄 Change Meal</a>
+</div>
+
+{% else %}
+<p>No suitable meal found.</p>
+{% endif %}
+
+</div>
+</div>
+{% endfor %}
+
+
+<h3 class="section-title">📊 Nutrition Analytics</h3>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<div class="chart-grid">
+<div class="chart-card"><canvas id="calorieChart"></canvas></div>
+<div class="chart-card"><canvas id="macroChart"></canvas></div>
+<div class="chart-card"><canvas id="feedbackChart"></canvas></div>
+</div>
+
+
+<h3 class="section-title">📜 Meal History</h3>
+
+<div class="table-card">
+<table>
+<tr>
+<th>Date</th>
+<th>Meal</th>
+<th>Food</th>
+<th>Calories</th>
+<th>Protein</th>
+<th>Carbs</th>
+<th>Fats</th>
+</tr>
+
+{% for entry in meal_history %}
+<tr>
+<td>{{ entry.date }}</td>
+<td>{{ entry.meal_type|title }}</td>
+<td>{{ entry.food.name }}</td>
+<td>{{ entry.calories|floatformat:2 }}</td>
+<td>{{ entry.protein|floatformat:2 }}</td>
+<td>{{ entry.carbs|floatformat:2 }}</td>
+<td>{{ entry.fats|floatformat:2 }}</td>
+</tr>
+{% endfor %}
+</table>
+</div>
+
+
+<h3 class="section-title">🧪 Micronutrient Summary</h3>
+
+<div class="summary">
+<p>Fiber: {{ fiber_total|floatformat:2 }} g</p>
+<p>Iron: {{ iron_total|floatformat:2 }} mg</p>
+<p>Calcium: {{ calcium_total|floatformat:2 }} mg</p>
+<p>Sodium: {{ sodium_total|floatformat:2 }} mg</p>
+<p>Vitamin C: {{ vitamin_c_total|floatformat:2 }} mg</p>
+
+<br>
+<canvas id="microChart"></canvas>
+</div>
+</div>
+
+<script>
+    // Calorie Pie Chart
+    new Chart(document.getElementById('calorieChart'), {
+        type: 'pie',
+        data: {
+            labels: ['Breakfast', 'Lunch', 'Dinner', 'Snack'],
+            datasets: [{
+                data: {{ calories_data|safe }},
+                backgroundColor: [
+                    '#FF6384',
+                    '#36A2EB',
+                    '#FFCE56',
+                    '#4BC0C0'
+                ]
+            }]
+        }
+    });
+
+    // Macro Bar Chart
+    new Chart(document.getElementById('macroChart'), {
+        type: 'bar',
+        data: {
+            labels: ['Protein', 'Carbs', 'Fats'],
+            datasets: [{
+                label: 'Total Grams',
+                data: [
+                    {{ protein_total }},
+                    {{ carbs_total }},
+                    {{ fats_total }}
+                ],
+                backgroundColor: [
+                    '#8E44AD',
+                    '#27AE60',
+                    '#E67E22'
+                ]
+            }]
+        }
+    });
+
+    // Feedback Doughnut Chart
+    new Chart(document.getElementById('feedbackChart'), {
+        type: 'doughnut',
+        data: {
+            labels: ['Accepted Meals', 'Rejected Meals'],
+            datasets: [{
+                data: [{{ total_positive }}, {{ total_negative }}],
+                backgroundColor: [
+                    '#2ECC71',
+                    '#E74C3C'
+                ]
+            }]
+        }
+    });
+
+    // 🔥 Micronutrient Chart
+    new Chart(document.getElementById('microChart'), {
+        type: 'bar',
+        data: {
+            labels: ['Fiber', 'Iron', 'Calcium', 'Sodium', 'Vitamin C'],
+            datasets: [{
+                label: 'Daily Micronutrients',
+                data: [
+                    {{ fiber_total }},
+                    {{ iron_total }},
+                    {{ calcium_total }},
+                    {{ sodium_total }},
+                    {{ vitamin_c_total }}
+                ],
+                backgroundColor: [
+                    '#9B59B6',
+                    '#E74C3C',
+                    '#3498DB',
+                    '#F39C12',
+                    '#2ECC71'
+                ]
+            }]
+        }
+    });
+</script>
+
+<!-- NAVIGATION LINKS -->
+<div style="text-align:center; margin-top:40px; padding:20px; background:white; border-radius:12px; box-shadow:0 8px 20px rgba(0,0,0,0.08);">
+    <h3 style="margin:0 0 15px 0; color:#1e293b;">🔗 Quick Actions</h3>
+    <div style="display:flex; justify-content:center; gap:15px; flex-wrap:wrap;">
+        <a href="{% url 'progress_dashboard' %}" class="btn" style="background:#10b981;">📊 View Progress</a>
+        <a href="{% url 'grocery_list' %}" class="btn" style="background:#22c55e;">🛒 Generate Grocery List</a>
+        <a href="{% url 'ingredient_recommendations' %}" class="btn" style="background:#f59e0b;">🥘 Ingredient-Based Meals</a>
+        <a href="{% url 'manage_ingredients' %}" class="btn" style="background:#8b5cf6;">📝 Manage Ingredients</a>
+        <a href="{% url 'knn_recommendations' %}" class="btn" style="background:#06b6d4;">🤖 AI Recommendations</a>
+    </div>
+</div>
+
+{% endblock %}

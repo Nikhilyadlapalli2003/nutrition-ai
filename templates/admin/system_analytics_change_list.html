@@ -1,0 +1,120 @@
+{% extends "admin/change_list.html" %}
+{% load static %}
+
+{% block content_title %}
+    <h1>System Analytics Dashboard</h1>
+{% endblock %}
+
+{% block result_list %}
+    <div class="module">
+        <h2>User Statistics</h2>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Metric</th>
+                    <th>Value</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Total Users</td>
+                    <td>{{ user_stats.total_users }}</td>
+                </tr>
+                <tr>
+                    <td>Active Users</td>
+                    <td>{{ user_stats.active_users }}</td>
+                </tr>
+                <tr>
+                    <td>Profiles Completed</td>
+                    <td>{{ user_stats.profiles_completed }} ({{ user_stats.profiles_completed|mul:100|div:user_stats.total_users|floatformat:1 }}%)</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="module">
+        <h2>Meal History Statistics</h2>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Metric</th>
+                    <th>Value</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Total Meals Logged</td>
+                    <td>{{ meal_stats.total_meals }}</td>
+                </tr>
+                <tr>
+                    <td>Average Rating</td>
+                    <td>{{ meal_stats.avg_rating|floatformat:1 }}/5</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="module">
+        <h2>Most Popular Foods</h2>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Food Name</th>
+                    <th>Recommendation Count</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for food in popular_foods %}
+                <tr>
+                    <td>{{ food.food__name }}</td>
+                    <td>{{ food.count }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div class="module">
+        <h2>System Usage Over Time</h2>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Month</th>
+                    <th>Meals Logged</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for stat in usage_stats %}
+                <tr>
+                    <td>{{ stat.month|date:"M Y" }}</td>
+                    <td>{{ stat.count }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div class="module">
+        <h2>User Feedback Statistics</h2>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Metric</th>
+                    <th>Value</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Total Feedback</td>
+                    <td>{{ feedback_stats.total_feedback }}</td>
+                </tr>
+                <tr>
+                    <td>Average Score</td>
+                    <td>{{ feedback_stats.avg_score|floatformat:1 }}/5</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    {{ block.super }}
+{% endblock %}

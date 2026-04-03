@@ -1,0 +1,184 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<style>
+
+/* ===== DASHBOARD BACKGROUND ===== */
+.dashboard-wrapper{
+    position:relative;
+    padding:30px 15px;
+}
+
+.dashboard-wrapper::before{
+    content:"";
+    position:absolute;
+    inset:0;
+    background:url("https://images.unsplash.com/photo-1490818387583-1baba5e638af") center/cover no-repeat;
+    filter:brightness(0.35);
+    border-radius:14px;
+}
+
+/* ===== MAIN CARD ===== */
+.dashboard-card{
+    position:relative;
+    z-index:2;
+    background:white;
+    border-radius:14px;
+    padding:30px;
+    box-shadow:0 12px 35px rgba(0,0,0,0.25);
+}
+
+/* ===== TITLE ===== */
+.dashboard-title{
+    text-align:center;
+    margin-bottom:25px;
+    color:#1e3a8a;
+    font-weight:600;
+}
+
+/* ===== GRID ===== */
+.grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+    gap:20px;
+}
+
+/* ===== INFO CARD ===== */
+.info-card{
+    background:#f9fafb;
+    border-radius:12px;
+    padding:18px;
+    box-shadow:0 4px 12px rgba(0,0,0,0.06);
+    transition:0.3s;
+}
+
+.info-card:hover{
+    transform:translateY(-5px);
+}
+
+.info-card h4{
+    font-size:14px;
+    color:#6b7280;
+    margin-bottom:6px;
+}
+
+.info-card p{
+    font-size:20px;
+    font-weight:600;
+    color:#111827;
+}
+
+/* ===== SECTION TITLE ===== */
+.section-title{
+    margin:30px 0 15px;
+    font-weight:600;
+    color:#111827;
+}
+
+/* ===== MACRO CARDS ===== */
+.macro-card{
+    text-align:center;
+    padding:20px;
+    border-radius:12px;
+    color:white;
+    font-weight:600;
+}
+
+.protein{ background:#22c55e; }
+.carbs{ background:#3b82f6; }
+.fats{ background:#f59e0b; }
+
+.macro-card span{
+    display:block;
+    font-size:22px;
+    margin-top:6px;
+}
+
+</style>
+
+
+<div class="dashboard-wrapper">
+
+<div class="dashboard-card">
+
+<h3 class="dashboard-title">📊 Your Nutrition Dashboard</h3>
+
+<!-- USER INFO -->
+<div class="grid">
+
+    <div class="info-card">
+        <h4>Age</h4>
+        <p>{{ profile.age }}</p>
+    </div>
+
+    <div class="info-card">
+        <h4>Height</h4>
+        <p>{{ profile.height }} cm</p>
+    </div>
+
+    <div class="info-card">
+        <h4>Weight</h4>
+        <p>{{ profile.weight }} kg</p>
+    </div>
+
+    <div class="info-card">
+        <h4>Activity Level</h4>
+        <p>{{ profile.activity_level }}</p>
+    </div>
+
+    <div class="info-card">
+        <h4>Goal</h4>
+        <p>{{ profile.goal }}</p>
+    </div>
+
+</div>
+
+
+<h4 class="section-title">🔥 Metabolic Analysis</h4>
+
+<div class="grid">
+
+    <div class="info-card">
+        <h4>BMR</h4>
+        <p>{{ bmr }} kcal/day</p>
+    </div>
+
+    <div class="info-card">
+        <h4>TDEE</h4>
+        <p>{{ tdee }} kcal/day</p>
+    </div>
+
+    <div class="info-card">
+        <h4>Daily Calorie Target</h4>
+        <p>{{ target_calories }} kcal/day</p>
+    </div>
+
+</div>
+
+
+<h4 class="section-title">🥗 Macronutrient Distribution</h4>
+
+<div class="grid">
+
+    <div class="macro-card protein">
+        Protein
+        <span>{{ macros.protein }} g/day</span>
+    </div>
+
+    <div class="macro-card carbs">
+        Carbohydrates
+        <span>{{ macros.carbs }} g/day</span>
+    </div>
+
+    <div class="macro-card fats">
+        Fats
+        <span>{{ macros.fats }} g/day</span>
+    </div>
+
+</div>
+
+</div>
+</div>
+
+{% endblock %}

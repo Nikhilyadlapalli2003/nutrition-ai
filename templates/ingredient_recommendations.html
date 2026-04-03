@@ -1,0 +1,283 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<style>
+/* ===== PAGE BACKGROUND ===== */
+.main-wrapper{
+    background:linear-gradient(135deg,#eef2ff,#f8fafc);
+    padding:25px;
+    border-radius:14px;
+    min-height:80vh;
+}
+
+/* ===== HEADER ===== */
+.page-header{
+    background:linear-gradient(135deg,#1e3a8a,#2563eb);
+    color:white;
+    padding:25px;
+    border-radius:12px;
+    margin-bottom:25px;
+}
+
+.page-header h2{
+    margin:0;
+    font-weight:600;
+}
+
+/* ===== INGREDIENT INPUT ===== */
+.input-section{
+    background:white;
+    border-radius:14px;
+    padding:25px;
+    margin-bottom:25px;
+    box-shadow:0 10px 25px rgba(0,0,0,0.08);
+}
+
+.input-group{
+    margin-bottom:20px;
+}
+
+.input-group label{
+    display:block;
+    font-weight:500;
+    margin-bottom:8px;
+    color:#374151;
+}
+
+.ingredient-input{
+    width:100%;
+    padding:12px;
+    border:2px solid #e5e7eb;
+    border-radius:8px;
+    font-size:16px;
+    transition:border-color 0.2s;
+}
+
+.ingredient-input:focus{
+    outline:none;
+    border-color:#2563eb;
+}
+
+.help-text{
+    font-size:14px;
+    color:#6b7280;
+    margin-top:5px;
+}
+
+.saved-ingredients{
+    background:#f8fafc;
+    padding:15px;
+    border-radius:8px;
+    margin-top:10px;
+}
+
+.saved-ingredients h4{
+    margin:0 0 10px 0;
+    color:#374151;
+}
+
+.tag{
+    display:inline-block;
+    background:#dbeafe;
+    color:#1e40af;
+    padding:4px 8px;
+    border-radius:12px;
+    font-size:13px;
+    margin:2px 4px 2px 0;
+}
+
+/* ===== RECOMMENDATIONS ===== */
+.recommendations-section{
+    background:white;
+    border-radius:14px;
+    padding:25px;
+    margin-bottom:25px;
+    box-shadow:0 10px 25px rgba(0,0,0,0.08);
+}
+
+.recommendations-section h3{
+    margin-top:0;
+    color:#1e293b;
+    font-weight:600;
+}
+
+/* ===== MEAL CARDS ===== */
+.meal-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(300px,1fr));
+    gap:20px;
+    margin-top:20px;
+}
+
+.meal-card{
+    background:#f8fafc;
+    border-radius:12px;
+    padding:20px;
+    border:2px solid #e5e7eb;
+}
+
+.meal-header{
+    font-weight:600;
+    font-size:18px;
+    margin-bottom:12px;
+    color:#1e293b;
+    display:flex;
+    align-items:center;
+    gap:10px;
+}
+
+.match-badge{
+    background:#22c55e;
+    color:white;
+    padding:2px 8px;
+    border-radius:10px;
+    font-size:12px;
+}
+
+.grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(100px,1fr));
+    gap:8px;
+    margin:12px 0;
+}
+
+.metric{
+    background:white;
+    padding:8px;
+    border-radius:6px;
+    font-size:13px;
+    text-align:center;
+    border:1px solid #e2e8f0;
+}
+
+/* ===== BUTTONS ===== */
+.btn{
+    background:#22c55e;
+    color:white;
+    padding:10px 20px;
+    border-radius:8px;
+    text-decoration:none;
+    font-weight:500;
+    display:inline-block;
+    margin:5px;
+    border:none;
+    cursor:pointer;
+}
+
+.btn:hover{
+    background:#16a34a;
+}
+
+.btn-secondary{
+    background:#6b7280;
+}
+
+.btn-secondary:hover{
+    background:#4b5563;
+}
+
+/* ===== EMPTY STATE ===== */
+.empty-state{
+    text-align:center;
+    padding:40px;
+    color:#6b7280;
+}
+
+.empty-state h3{
+    margin-bottom:10px;
+    color:#374151;
+}
+</style>
+
+<div class="main-wrapper">
+
+<!-- HEADER -->
+<div class="page-header">
+    <h2>🥘 Ingredient-Based Meal Recommendations</h2>
+    <p>Enter ingredients you have at home and get personalized meal suggestions</p>
+</div>
+
+<!-- INGREDIENT INPUT -->
+<div class="input-section">
+    <form method="post">
+        {% csrf_token %}
+
+        <div class="input-group">
+            <label for="ingredients">Available Ingredients:</label>
+            <input type="text"
+                   id="ingredients"
+                   name="ingredients"
+                   class="ingredient-input"
+                   placeholder="e.g., chicken, rice, tomatoes, onions"
+                   value="{% for ing in available_ingredients %}{% if forloop.first %}{{ ing }}{% else %}, {{ ing }}{% endif %}{% endfor %}">
+            <div class="help-text">
+                Enter ingredients separated by commas. Example: chicken, rice, tomatoes, onions, oil
+            </div>
+        </div>
+
+        {% if saved_ingredients %}
+        <div class="saved-ingredients">
+            <h4>💡 Your Saved Ingredients:</h4>
+            {% for ing in saved_ingredients %}
+            <span class="tag">{{ ing }}</span>
+            {% endfor %}
+            <div style="margin-top:10px;">
+                <a href="{% url 'manage_ingredients' %}" class="btn btn-secondary" style="font-size:13px; padding:6px 12px;">Manage Ingredients</a>
+            </div>
+        </div>
+        {% endif %}
+
+        <button type="submit" class="btn">🔍 Find Meals</button>
+    </form>
+</div>
+
+<!-- RECOMMENDATIONS -->
+{% if recommendations %}
+<div class="recommendations-section">
+    <h3>🍽 Recommended Meals from Your Ingredients</h3>
+
+    <div class="meal-grid">
+        {% for meal_type, meal in recommendations.items %}
+        <div class="meal-card">
+            <div class="meal-header">
+                {% if meal_type == 'breakfast' %}🌅{% elif meal_type == 'lunch' %}☀️{% elif meal_type == 'dinner' %}🌙{% else %}🍪{% endif %}
+                {{ meal_type|title }}
+                <span class="match-badge">Match Found</span>
+            </div>
+
+            <p><strong>{{ meal.name }}</strong></p>
+
+            <div class="grid">
+                <div class="metric">Calories: {{ meal.adjusted_calories|default:meal.calories|floatformat:2 }}</div>
+                <div class="metric">Protein: {{ meal.adjusted_protein|default:meal.protein|floatformat:2 }}g</div>
+                <div class="metric">Carbs: {{ meal.adjusted_carbs|default:meal.carbs|floatformat:2 }}g</div>
+                <div class="metric">Fats: {{ meal.adjusted_fats|default:meal.fats|floatformat:2 }}g</div>
+            </div>
+
+            <div style="margin-top:15px;">
+                <a href="{% url 'meal_replacement' meal_type meal.id %}" class="btn" style="font-size:13px; padding:8px 16px;">🔄 View Alternatives</a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% elif available_ingredients %}
+<div class="recommendations-section">
+    <div class="empty-state">
+        <h3>No meals found</h3>
+        <p>No meals could be created with the ingredients: <strong>{{ available_ingredients|join:", " }}</strong></p>
+        <p>Try adding more ingredients or different combinations.</p>
+    </div>
+</div>
+{% endif %}
+
+<!-- ACTIONS -->
+<div style="text-align:center; margin-top:30px;">
+    <a href="{% url 'recommendations' %}" class="btn btn-secondary">← Back to Recommendations</a>
+    <a href="{% url 'grocery_list' %}" class="btn">🛒 View Grocery List</a>
+</div>
+
+</div>
+
+{% endblock %}

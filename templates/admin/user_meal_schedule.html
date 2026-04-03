@@ -1,0 +1,167 @@
+{% extends "admin/base_site.html" %}
+{% load static %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block breadcrumbs %}
+<div class="breadcrumbs">
+<a href="{% url 'admin:index' %}">Home</a>
+&rsaquo; <a href="{% url 'admin:auth_user_changelist' %}">Users</a>
+&rsaquo; <a href="{% url 'admin:auth_user_change' user.id %}">{{ user.username }}</a>
+&rsaquo; Meal Schedule
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="module">
+    <h2>{{ title }}</h2>
+
+    <!-- User Summary -->
+    <div style="margin-bottom: 20px; padding: 15px; background: #f8f8f8; border-radius: 5px;">
+        <h3>User Information</h3>
+        <p><strong>Username:</strong> {{ user.username }}</p>
+        <p><strong>Email:</strong> {{ user.email }}</p>
+        <p><strong>Joined:</strong> {{ user.date_joined|date:"M d, Y" }}</p>
+        <p><strong>Total Meals Logged:</strong> {{ meal_history|length }}</p>
+        <p><strong>Assigned Diet Plan:</strong> {{ diet_plan }}</p>
+        <p><strong>Feedback Given:</strong> {{ feedback_stats.total_feedback }} ({{ feedback_stats.positive_feedback }} positive, {{ feedback_stats.negative_feedback }} negative)</p>
+    </div>
+
+    <!-- Date Range Filter -->
+    <div style="margin-bottom: 20px;">
+        <form method="get" style="display: inline;">
+            <label for="start_date">From:</label>
+            <input type="date" id="start_date" name="start_date" value="{{ start_date|date:'Y-m-d' }}">
+            <label for="end_date">To:</label>
+            <input type="date" id="end_date" name="end_date" value="{{ end_date|date:'Y-m-d' }}">
+            <button type="submit" class="button">Filter</button>
+        </form>
+    </div>
+
+    <!-- Daily Nutrition Summary -->
+    <div class="module">
+        <h3>Daily Nutrition Summary ({{ start_date|date:"M d, Y" }} - {{ end_date|date:"M d, Y" }})</h3>
+        <table style="width: 100%; border-collapse: collapse;">
+            <thead>
+                <tr style="background: #f8f8f8;">
+                    <th style="border: 1px solid #ddd; padding: 8px;">Date</th>
+                    <th style="border: 1px solid #ddd; padding: 8px;">Meals</th>
+                    <th style="border: 1px solid #ddd; padding: 8px;">Calories</th>
+                    <th style="border: 1px solid #ddd; padding: 8px;">Protein (g)</th>
+                    <th style="border: 1px solid #ddd; padding: 8px;">Carbs (g)</th>
+                    <th style="border: 1px solid #ddd; padding: 8px;">Fats (g)</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for date, summary in daily_summaries.items %}
+                <tr>
+                    <td style="border: 1px solid #ddd; padding: 8px;">{{ date|date:"M d, Y" }}</td>
+                    <td style="border: 1px solid #ddd; padding: 8px;">{{ summary.meal_count }}</td>
+                    <td style="border: 1px solid #ddd; padding: 8px;">{{ summary.total_calories }}</td>
+                    <td style="border: 1px solid #ddd; padding: 8px;">{{ summary.total_protein }}</td>
+                    <td style="border: 1px solid #ddd; padding: 8px;">{{ summary.total_carbs }}</td>
+                    <td style="border: 1px solid #ddd; padding: 8px;">{{ summary.total_fats }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6" style="border: 1px solid #ddd; padding: 8px; text-align: center;">No meals found for this period</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Detailed Meal History -->
+    <div class="module">
+        <h3>Detailed Meal History</h3>
+        <table style="width: 100%; border-collapse: collapse;">
+            <thead>
+                <tr style="background: #f8f8f8;">
+                    <th style="border: 1px solid #ddd; padding: 8px;">Date</th>
+                    <th style="border: 1px solid #ddd; padding: 8px;">Meal Type</th>
+                    <th style="border: 1px solid #ddd; padding: 8px;">Food</th>
+                    <th style="border: 1px solid #ddd; padding: 8px;">Calories</th>
+                    <th style="border: 1px solid #ddd; padding: 8px;">Protein (g)</th>
+                    <th style="border: 1px solid #ddd; padding: 8px;">Carbs (g)</th>
+                    <th style="border: 1px solid #ddd; padding: 8px;">Fats (g)</th>
+                    <th style="border: 1px solid #ddd; padding: 8px;">Time</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for meal in meal_history %}
+                <tr>
+                    <td style="border: 1px solid #ddd; padding: 8px;">{{ meal.date|date:"M d, Y" }}</td>
+                    <td style="border: 1px solid #ddd; padding: 8px;">{{ meal.get_meal_type_display }}</td>
+                    <td style="border: 1px solid #ddd; padding: 8px;">{{ meal.food.description }}</td>
+                    <td style="border: 1px solid #ddd; padding: 8px;">{{ meal.calories }}</td>
+                    <td style="border: 1px solid #ddd; padding: 8px;">{{ meal.protein }}</td>
+                    <td style="border: 1px solid #ddd; padding: 8px;">{{ meal.carbs }}</td>
+                    <td style="border: 1px solid #ddd; padding: 8px;">{{ meal.fats }}</td>
+                    <td style="border: 1px solid #ddd; padding: 8px;">{{ meal.created_at|time:"H:i" }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="8" style="border: 1px solid #ddd; padding: 8px; text-align: center;">No meals found</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Nutrition Trends Chart -->
+    <div class="module">
+        <h3>Nutrition Trends</h3>
+        <canvas id="nutritionChart" style="height:300px;"></canvas>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        (function(){
+            const ctx = document.getElementById('nutritionChart').getContext('2d');
+            const data = {
+                labels: {{ trend_dates|safe }},
+                datasets: [
+                    { label: 'Calories', data: {{ trend_calories|safe }}, borderColor: 'red', fill: false },
+                    { label: 'Protein', data: {{ trend_protein|safe }}, borderColor: 'blue', fill: false },
+                    { label: 'Carbs', data: {{ trend_carbs|safe }}, borderColor: 'green', fill: false },
+                    { label: 'Fats', data: {{ trend_fats|safe }}, borderColor: 'orange', fill: false },
+                ]
+            };
+            new Chart(ctx, {
+                type: 'line',
+                data: data,
+                options: {
+                    responsive: true,
+                    interaction: { mode: 'index', intersect: false },
+                    stacked: false,
+                    plugins: { title: { display: true, text: 'Daily Nutrition Trends' } },
+                    scales: {
+                        y: { beginAtZero: true }
+                    }
+                }
+            });
+        })();
+    </script>
+</div>
+
+<style>
+.module {
+    margin-bottom: 20px;
+}
+.module h2, .module h3 {
+    margin-top: 0;
+    color: #333;
+}
+.button {
+    background: #79aec8;
+    color: white;
+    padding: 5px 10px;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+}
+.button:hover {
+    background: #609ab6;
+}
+</style>
+{% endblock %}

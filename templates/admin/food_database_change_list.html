@@ -1,0 +1,100 @@
+{% extends "admin/change_list.html" %}
+{% load static %}
+
+{% block content_title %}
+    <h1>Food Database Analytics</h1>
+{% endblock %}
+
+{% block result_list %}
+    <div class="module">
+        <h2>Database Statistics</h2>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Metric</th>
+                    <th>Value</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Total Foods</td>
+                    <td>{{ food_stats.total_foods }}</td>
+                </tr>
+                <tr>
+                    <td>Average Calories</td>
+                    <td>{{ food_stats.avg_calories|floatformat:1 }}</td>
+                </tr>
+                <tr>
+                    <td>Total Protein (g)</td>
+                    <td>{{ food_stats.total_protein|floatformat:1 }}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="module">
+        <h2>Foods by Category</h2>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Category</th>
+                    <th>Count</th>
+                    <th>Percentage</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for stat in category_stats %}
+                <tr>
+                    <td>{{ stat.category|title }}</td>
+                    <td>{{ stat.count }}</td>
+                    <td>{{ stat.count|mul:100|div:food_stats.total_foods|floatformat:1 }}%</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div class="module">
+        <h2>Foods by Diet Type</h2>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Diet Type</th>
+                    <th>Count</th>
+                    <th>Percentage</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for stat in diet_stats %}
+                <tr>
+                    <td>{{ stat.diet_type|title }}</td>
+                    <td>{{ stat.count }}</td>
+                    <td>{{ stat.count|mul:100|div:food_stats.total_foods|floatformat:1 }}%</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div class="module">
+        <h2>Ingredients by Category</h2>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Category</th>
+                    <th>Count</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for stat in ingredient_stats %}
+                <tr>
+                    <td>{{ stat.category|title }}</td>
+                    <td>{{ stat.count }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    {{ block.super }}
+{% endblock %}
